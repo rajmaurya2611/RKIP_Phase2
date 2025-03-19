@@ -13,7 +13,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "./store/store";
 import { setActiveView, setActiveChatSub, setShowInitial, toggleSidebar,setOpenKeys } from "./store/slices/appSlice";
 import Logo from "./assets/images/logo.png";
-import Logo1 from "./assets/images/logo1.png";
+import Logo1 from "./assets/images/Logo1.png";
 
 // Lazy load pages
 const Chat = lazy(() => import("./pages/Chat"));
