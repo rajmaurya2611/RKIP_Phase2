@@ -5,7 +5,7 @@ import { useSubmitFeedbackMutation, useFetchRecentFeedbackQuery } from "../store
 const Feedback = () => {
   const [form] = Form.useForm();
   const [submitFeedback, { isLoading }] = useSubmitFeedbackMutation();
-  const { data, refetch, isFetching } = useFetchRecentFeedbackQuery(); // Fetch recent feedback
+  const { data, refetch, isFetching } = useFetchRecentFeedbackQuery();
   const [submitted, setSubmitted] = useState(false);
 
   const handleSubmit = async (values: { name: string; feedback: string }) => {
@@ -14,18 +14,18 @@ const Feedback = () => {
       message.success("Feedback submitted successfully!");
       form.resetFields();
       setSubmitted(true);
-      refetch(); // Refresh recent feedback
+      refetch();
     } catch (error) {
       message.error("Error submitting feedback. Please try again.");
       console.error("Feedback submission error:", error);
     }
   };
 
-  // ✅ Transform feedback array into objects
+  // ✅ Format feedback data for table
   const formattedFeedback = data?.recent_feedback?.map((item: string[], index: number) => ({
-    key: index, // Required for Ant Design Table
-    name: item[0], // First element is name
-    feedback: item[1], // Second element is feedback
+    key: index,
+    name: item[0], // Name
+    feedback: item[1], // Feedback
   })) || [];
 
   // ✅ Define Table Columns
@@ -43,49 +43,61 @@ const Feedback = () => {
   ];
 
   return (
-    <div className="max-w-lg mx-auto bg-white shadow-lg p-6 rounded-lg">
-      <h2 className="text-2xl font-bold mb-4 text-gray-800">Submit Feedback</h2>
+    <div className="max-w-full mx-auto bg-white shadow-lg  rounded-lg">
+      <h2 className="text-2xl font-bold mb-4 text-gray-800 py-8 text-center">Feedback</h2>
 
-      {!submitted ? (
-        <Form form={form} layout="vertical" onFinish={handleSubmit}>
-          <Form.Item
-            label="Your Name"
-            name="name"
-            rules={[{ required: true, message: "Please enter your name" }]}
-          >
-            <Input placeholder="Enter your name" />
-          </Form.Item>
+      {/* Two Column Layout */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        
+        {/* Left Column: Feedback Form */}
+        <div className="bg-gray-100 p-6 rounded-lg">
+          <h3 className="text-xl font-semibold mb-4 text-gray-700">Send Feedback</h3>
 
-          <Form.Item
-            label="Your Feedback"
-            name="feedback"
-            rules={[{ required: true, message: "Please enter your feedback" }]}
-          >
-            <Input.TextArea rows={4} placeholder="Write your feedback here..." />
-          </Form.Item>
+          {!submitted ? (
+            <Form form={form} layout="vertical" onFinish={handleSubmit}>
+              <Form.Item
+                label="Your Name"
+                name="name"
+                rules={[{ required: true, message: "Please enter your name" }]}
+              >
+                <Input placeholder="Enter your name" />
+              </Form.Item>
 
-          <Button type="primary" htmlType="submit" loading={isLoading} block>
-            Submit Feedback
-          </Button>
-        </Form>
-      ) : (
-        <p className="text-green-600 font-semibold">Thank you for your feedback! 😊</p>
-      )}
+              <Form.Item
+                label="Your Feedback"
+                name="feedback"
+                rules={[{ required: true, message: "Please enter your feedback" }]}
+              >
+                <Input.TextArea rows={4} placeholder="Write your feedback here..." />
+              </Form.Item>
 
-      {/* Display Top 3 Feedback in Table */}
-      <div className="mt-6">
-        <h3 className="text-xl font-semibold mb-2 text-gray-700">Recent Feedback</h3>
+              <Button type="primary" htmlType="submit" loading={isLoading} block>
+                Submit Feedback
+              </Button>
+            </Form>
+          ) : (
+            <p className="text-green-600 font-semibold text-center">Thank you for your feedback! 😊</p>
+          )}
+        </div>
 
-        {isFetching ? (
-          <Spin size="large" />
-        ) : (
-          <Table
-            dataSource={formattedFeedback}
-            columns={columns}
-            pagination={false} // Disable pagination since we only show 3 items
-            bordered
-          />
-        )}
+        {/* Right Column: Recent Feedback Table */}
+        <div className="bg-gray-50 p-6 rounded-lg">
+          <h3 className="text-xl font-semibold mb-4 text-gray-700">Recent Feedback</h3>
+
+          {isFetching ? (
+            <div className="flex justify-center">
+              <Spin size="large" />
+            </div>
+          ) : (
+            <Table
+              dataSource={formattedFeedback}
+              columns={columns}
+              pagination={false}
+              bordered
+            />
+          )}
+        </div>
+
       </div>
     </div>
   );
